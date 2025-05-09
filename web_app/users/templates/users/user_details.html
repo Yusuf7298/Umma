@@ -1,0 +1,77 @@
+{% extends "users/base_home.html" %}
+{% block title %}{{ user.first_name }} | {{ user.last_name }}{% endblock %}
+{% block content %}
+<div class="relationship-actions">
+  {% if request.user.is_authenticated and request.user != user %}
+      {% if not is_following %}
+         <form method="POST" action="{% url 'follow_user' user.id %}" class="d-inline">
+           {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Follow</button>
+         </form>
+      {% else %}
+        <form method="POST" action="{% url 'unfollow_user' user.id %}" class="d-inline">
+           {% csrf_token %}
+              <button type="submit" class="btn btn-secondary">Unfollow</button>
+        </form>
+      {% endif %}
+      {% if is_friends %}
+          <span class="badge bg-success ms-2">Friends</span>
+      {% elif friend_request_sent %}
+          <span class="badge bg-info ms-2">Request Sent</span>
+      {% elif pending_request_from_user %}
+          <form method="post" action="{% url 'accept_friend_request' user.id %}" class="d-inline ms-2">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success">Accept Request</button>
+          </form>
+      {% else %}
+          <form method="post" action="{% url 'send_friend_request' user.id %}" class="d-inline ms-2">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-success">Add Friend</button>
+          </form>
+      {% endif %}
+  {% endif %}
+</div>
+<div class="relationship-stats">
+    <a href="#">{{ user.followers.count }} Followers</a> |
+    <a href="#">{{ user.following.count }} Following</a> |
+    <a href="#">{{ user.friends.count }} Friends</a>
+    <a href="#">Post</a> |
+    <a href="#">No</a> |
+</div>
+{% if user.blogs.all %} 
+  <div class="user-posts">
+    <h3>{% if request.user == user %}Your{% else %}{{ user.first_name }} {% endif %}  Posts</h3>
+    
+    {% for post in user.blogs.all %}
+      <div class="blog-post" id="post-{{ post.slug }}">
+        
+        
+        {% if post.image_file %}
+          <img src="{{ post.image_file.url }}" alt="{{ post.title }}" class="post-image">
+        {% endif %}
+        
+        <div class="post-content">
+          {{ post.content|truncatewords:30|linebreaks }}
+        </div>
+        
+        {% if post.videos_file %}
+          <video controls width="100%">
+            <source src="{{ post.videos_file.url }}">
+            Your browser doesn't support HTML5 video.
+          </video>
+        {% endif %}
+        
+        <div class="post-meta">
+          <span class="date">
+            Created: {{ post.date_created|date:"F j, Y" }} | 
+            Updated: {{ post.date_updated|date:"F j, Y" }}
+          </span>
+        </div>
+        
+      </div>
+    {% empty %}
+      <p class="no-posts">No blog posts yet.</p>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

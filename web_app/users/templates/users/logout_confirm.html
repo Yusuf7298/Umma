@@ -1,0 +1,10 @@
+{% extends "YMC/base.html" %}
+{% block content %}
+    <h2>Are you sure you want to log out?</h2>
+    <form method="post" action="{% url 'logout' %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-info btn-sm">Yes, Log out
+        </button>
+    </form>
+    <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm">No</a>
+{% endblock content%}

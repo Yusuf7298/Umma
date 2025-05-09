@@ -1,0 +1,45 @@
+{% extends "users/base.html" %}
+{% block content %}
+<div class="instagram-story-viewer">
+ 
+    <div class="story-header">
+        <div class="progress-bars">
+            {% for _ in stories %}
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="user-info">
+            {% if story.user.profile.image %}
+                <img class="profile-pic" src="{{ story.user.profile.image.url }}" alt="{{ story.user.username }}">
+            {% endif %}
+            <span class="username">{{ story.user.username }}</span>
+            <span class="time">1h</span>
+            <button class="close-btn"><a href="{% url 'home' %}">&times;</a></button>
+        </div>
+    </div>
+
+  
+    <div class="story-content">
+        <img src="{{ story.image.url }}" alt="Story" class="story-image">
+        <div class="nav-arrows">
+            <button class="nav-arrow prev"><a href="{% url 'home' %}">&larr;</a></button>
+            <button class="nav-arrow next"><a href="{% url 'home' %}">&larr;</a></button>
+        </div>
+    </div>
+
+    
+    <div class="story-footer">
+        <input type="text" placeholder="Send message" class="reply-input">
+        <button class="send-btn">
+            <i class='bx bx-send'></i>
+        </button>
+    </div>
+</div>
+<div class="all-stories" style="display: none;">
+    {% for story in stories %}
+        <div class="story-item" data-story-id="{{ story.id }}"></div>
+    {% endfor %}
+</div>
+{% endblock %}

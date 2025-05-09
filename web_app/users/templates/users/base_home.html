@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> Umma</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'YMC/main.css' %}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .sidebar {
+            position: fixed;
+            top:50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background-color:transparent;
+            height: 100%;
+            border-radius: 20px;
+            width: 60px;
+        }
+        .sidebar .nav-link {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            background-color: transparent;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .content-wrapper {
+            margin-left: 80px;
+            padding: 20px;
+        }
+        .right-sidebar{
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background-color:transparent;
+            height: 100%;
+            border-radius: 20px;
+            width: 250px;
+        }
+        i {
+            color:blue;
+            font-size: 150%;
+            margin-left:10px;
+            margin-right: 10px;
+        }
+        i:hover {
+            transform: scale(1.5);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .stories-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto 20px;
+        }
+        
+        .stories-header {
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            background-color: transparent;
+            color: white;
+            border-radius: 10px;
+            padding: 10px 5%; 
+            scrollbar-width: none; 
+            top: 0;
+            z-index: 100;
+            width: 90%;
+            margin: 0 auto; 
+            gap: 15px;
+            scroll-behavior: smooth;
+        }
+        
+        .stories-header::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0; 
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .story-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #4285f4;
+            padding: 2px;
+            transition: transform 0.2s ease;
+        }
+        
+        .story-item img:hover {
+            transform: scale(1.05);
+        }
+        
+        .story-author {
+            font-size: 0.7rem;
+            color: black;
+            margin-top: 5px;
+            text-align: center;
+            width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .create-story-btn {
+            position: relative;
+            display: block;
+        }
+        
+        .create-story-btn::after {
+            content: '+';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #4285f4;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+       
+        .story-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .story-prev {
+            left: 10px;
+        }
+        
+        .story-next {
+            right: 10px;
+        }
+        
+        .stories-container:hover .story-nav {
+            display: flex;
+        }
+        
+        .story-nav:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+
+<body>
+     {% if messages %}
+        {% for message in messages %}
+           <div class="alert alert-{{ message.tags }}">
+           {{ message }}
+           </div>
+        {% endfor %}
+     {% endif %}
+     {% block story %}{% endblock %}
+    <div class="sidebar">
+        {% if user.is_authenticated %}
+            <div>
+                <a href="#" class="nav-item nav-link"><img class="rounded-circle article-img" src="{% static 'YMC/Umma.png' %}" ><br>Umma</a>
+                <a href="{% url 'profile' %}" class="nav-item nav-link"><i class='bx bx-user'></i>User</a>
+                <a href="{% url 'home' %}" class="nav-item nav-link"><i class='bx bxs-home'></i>Home</a>
+                <a href="{% url 'image_post' %}" class="nav-item nav-link"><i class='bx bx-images'></i>Images</a>
+                <a href="{% url 'video_post' %}" class="nav-item nav-link"><i class='bx bxs-videos'></i>Video</a>
+                <a href="{% url 'idea_post' %}" class="nav-item nav-link"><i class='bx bxs-book-bookmark'></i>Idea</a>
+                <a href="{% url 'create_post' %}" class="nav-item nav-link"><i class='bx bx-add-to-queue bx-burst bx-rotate-90' ></i>Create</a>
+                <a href="#" class="nav-item nav-link"><i class='bx bx-search bx-tada'></i>Search</a>
+                <a href="#" class="nav-item nav-link"><i class='bx bx-cog bx-tada'></i>Settings</a>
+            </div>
+        {% endif %}
+    </div>
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="col-md-4 right-sidebar d-none d-md-block">
+                <h3 class="mb-3">User</h3>
+                <div class="navbar-nav">
+                    {% if user.is_authenticated and user.is_staff %}
+                    <div class="text-center">
+                        <img class="rounded-circle article-img mb-2" src="{{ user.profile.image.url }}" alt="{{ user.username }}" width="100" height="100">
+                        <p class="mb-1"><strong>{{ user.first_name }}  {{ user.last_name }}</strong></p>
+                        <p class="mb-1">{{ user.email }}</p>
+                        <p class="mb-3">{{ user.profile.bio }}</p>
+                    </div>
+                    <small><a href="{% url 'user_list' %}"class="nav-item nav-link text-decoration-none">Manage User</a></small>
+                    <small><a href="{% url 'logout_confirm' %}"class="nav-item nav-link text-decoration-none">Logout</a></small>
+                    <small><a href="#"class="nav-item nav-link text-decoration-none">Followers: {{ user.followers.count }}</a></small>
+                    <small><a href="#"class="nav-item nav-link text-decoration-none">Following: {{ user.following.count }}</a></small>
+                    <small>Suggested for you</small>
+                    {% elif user.is_authenticated %}
+                        <div class="text-center">
+                            <img class="rounded-circle article-img mb-2" src="{{ user.profile.image.url }}" alt="{{ user.username }}" width="100" height="100">
+                            <p class="mb-1"><strong>{{ user.first_name }}  {{ user.last_name }}</strong></p>
+                            <p class="mb-1">{{ user.email }}</p>
+                            <p class="mb-3">{{ user.profile.bio }}</p>
+                        </div>
+                        <small><a href="{% url 'logout_confirm' %}"class="nav-item nav-link text-decoration-none">Logout</a></small>
+                        <small><a href="#"class="nav-item nav-link text-decoration-none">Followers: {{ user.followers.count }}</a></small>
+                        <small><a href="#"class="nav-item nav-link text-decoration-none">Following: {{ user.following.count }}</a></small>
+                        <small>Suggested for you</small>
+
+                    {% else %}
+                        <a href="{% url 'register' %}" class="nav-item nav-link text-decoration-none">Register</a>
+                        <a href="{% url 'login' %}" class="nav-item nav-link text-decoration-none">Login</a>
+                    {% endif %}
+                    <a href="#" class="nav-item nav-link text-decoration-none">More</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function navigateStories(direction) {
+            const container = document.getElementById('storiesHeader');
+            const scrollAmount = 300; 
+            
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+            
+            setTimeout(updateArrowVisibility, 300);
+        }
+        
+        function updateArrowVisibility() {
+            const container = document.getElementById('storiesHeader');
+            const prevArrow = document.querySelector('.story-prev');
+            const nextArrow = document.querySelector('.story-next');
+            
+            if (container.scrollLeft <= 10) {
+                prevArrow.style.display = 'none';
+            } else {
+                prevArrow.style.display = 'flex';
+            }
+            
+            // Show/hide next arrow
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                nextArrow.style.display = 'none';
+            } else {
+                nextArrow.style.display = 'flex';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateArrowVisibility();
+            document.getElementById('storiesHeader').addEventListener('scroll', updateArrowVisibility);
+        });
+    </script>
+    
+    <script src="{% static 'YMC/video-scroll-pause.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

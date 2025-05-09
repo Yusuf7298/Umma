@@ -1,0 +1,45 @@
+{% extends "YMC/base.html" %}
+{% load static %}
+{% block content %}
+  <div class="container">
+      {% for post in ideas %}
+        {% if post.title or post.content %}
+          <article class="media content-section shadow-sm p-3 mb-3 bg-white rounded">
+            {% if post.author.profile.image %}
+              <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}"> 
+            {% else %}
+              <img class="rounded-circle article-img" src="{% static 'YMC/default.jpg' %}">
+            {% endif %} 
+            <div class="media-body" style="background-color:skylight;">
+              <div class="article-metadata d-flex justify-content-between align-items-center">
+                <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+                <small class="text-muted">{{ post.date_created|date:"F d, Y" }}</small>
+              </div>
+              <h2><a class="article-title" href="{% url 'detail_post' post.id %}">{{ post.title }}</a></h2>
+              {% if post.content|length > 50 %}
+                <p class="card-text">{{ post.content|truncatewords:20 }} <a style="text-decoration: none;" href="{% url 'detail_post' post.id %}" class="text-primary"><small>See more</small></a></p>
+              {% else %}
+                <p class="card-text">{{ post.content }}</p>
+              {% endif %}
+            <hr>
+              <div class="d-flex justify-content-start align-items-center">  
+                <a style="text-decoration: none;" class="mr-3 text-muted" href="{% url 'blogcomment' %}"><i class='bx bx-comment'></i></a>
+                <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-like'></i></a>
+                <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-dislike'></i></a>
+                <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-share'></i></a>
+                <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-save'></i></a>
+              </div>
+            </div>
+        {% endif %}    
+        </article>
+      {% empty %}
+        <div class="text-center py-5">
+          <h4 class="text-muted mb-4">No Idea posts yet</h4>
+          <a href="{% url 'create_idea_post' %}" class="btn btn-primary">
+            <i class='bx bx-plus'></i> Create Your Idea post
+          </a>
+        </div>
+      {% endfor %}
+    
+  </div>  
+{% endblock content %}

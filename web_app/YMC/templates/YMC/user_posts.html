@@ -1,0 +1,132 @@
+{% extends "users/base_home.html" %}
+{% load static %}
+{% block content %}
+    <div class="container"> 
+        <div>
+            {% with first_post=posts.0 %}
+                {% if first_post %}
+                    <div class="d-flex align-items-center">
+                        {% if first_post.author.profile.image %}
+                            <img class="rounded-circle mr-4 w-20 h-20" src="{{ first_post.author.profile.image.url }}" alt="{{ first_post.author.username }}" width="80" height="80"> 
+                        {% else %}
+                            <img class="rounded-circle mr-4" src="{% static 'YMC/default.jpg' %}" alt="{{ first_post.author.username }}" width="80" height="80">
+                        {% endif %}
+                        <div>
+                            <h2>{{ first_post.author.first_name }}  {{ first_post.author.last_name }}  <div class="relationship-actions">
+                                {% if request.user.is_authenticated and request.user != first_post.author %}
+                                    {% if not is_following %}
+                                       <form method="POST" action="{% url 'follow_user' user.id %}" class="d-inline">
+                                         {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Follow</button>
+                                       </form>
+                                    {% else %}
+                                      <form method="POST" action="{% url 'unfollow_user' user.id %}" class="d-inline">
+                                         {% csrf_token %}
+                                            <button type="submit" class="btn btn-secondary">Unfollow</button>
+                                      </form>
+                                    {% endif %}
+                                    {% if is_friends %}
+                                        <span class="badge bg-success ms-2"><i class='bx bxs-user-plus'></i></span>
+                                    {% elif friend_request_sent %}
+                                        <span class="badge bg-info ms-2">Request Sent</span>
+                                    {% elif pending_request_from_user %}
+                                        <form method="post" action="{% url 'accept_friend_request' user.id %}" class="d-inline ms-2">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success"><i class='bx bxs-user-check' ></i></button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{% url 'send_friend_request' user.id %}" class="d-inline ms-2">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-light"><i class='bx bxs-user-plus'></i></button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                              </div></h2>
+                            <table class="table" style="font-family: Cambria;">
+                                <tbody>
+                                    <tr>
+                                        <td><p >Joined: {{ first_post.author.date_joined|date:"F d, Y" }}</p>
+                                            <p>Username: @{{ first_post.author.username }}</p>
+                                            </td>
+                                        <td>
+                                            {% if first_post.author.profile.bio %}
+                                                <p >Bio: {{ first_post.author.profile.bio }}</p>
+                                            {% endif %}
+                                            <p >Total posts: {{ page_obj.paginator.count }}</p></td>
+                                        <td> <p >Followers : {{ first_post.author.followers.count }}</p>
+                                            <p >
+                                                Following: {{ first_post.author.following.count }}
+                                            </p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+        {% for post in posts %}
+            <article class="media content-section mb-4 p-3 bg-white rounded shadow-sm">  
+                <div class="media-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3"> 
+                        {% if post.author.profile.image %}
+                            <img class="rounded-circle article-img mr-3" src="{{ post.author.profile.image.url }}" alt="{{ post.author.username }}"> 
+                        {% else %}
+                            <img class="rounded-circle article-img mr-3" src="{% static 'YMC/default.jpg' %}" alt="{{ post.author.username }}">
+                        {% endif %}
+                        <div class="article-metadata">
+                            <a class="mr-2 font-weight-bold text-decoration-none" href="{% url 'user_detail' post.author.id %}">{{ post.author }}</a>
+                            <small class="text-muted">{{ post.date_created|date:"F d, Y" }}</small>
+                        </div>
+                        <hr style="border-radius: 1px;"> 
+                    </div>
+                    
+                    <h2 class="card-title"><a class="text-dark text-decoration-none" href="{% url 'detail_post' post.id %}">{{ post.title }}</a></h2>
+                    
+                    {% if post.content|length > 30 %}
+                        <p class="card-text">{{ post.content|truncatewords:20 }}<a style="text-decoration: none;" href="{% url 'detail_post' post.id %}" class="text-primary"><small>See more</small></a></p>
+                    {% else %}
+                        <p class="card-text">{{ post.content }}</p>
+                    {% endif %}
+                    
+                    {% if post.image_file or post.videos_file %}
+                        <div class="row">
+                            {% if post.image_file %}
+                                <div class="col-md-6 mb-2">
+                                    <img src="{{ post.image_file.url }}" class="img-fluid rounded" alt="{{ post.title }}">
+                                </div>
+                            {% endif %}
+                            {% if post.videos_file %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="embed-responsive embed-responsive-16by9">
+                                        <video autoplay loop muted class="w-100 rounded" style="max-height: 400px;" controls aria-label="{{ post.title }}">
+                                            <source src="{{ post.videos_file.url }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-start align-items-center" style="margin:2px">
+                        <a class="mr-3 text-muted text-decoration-none" href="{% url 'blogcomment' %}"><i class='bx bx-comment'></i></a>
+                        <a class="mr-3 text-muted text-decoration-none" href="#"><i class='bx bx-like'></i></a>
+                        <a class="mr-3 text-muted text-decoration-none" href="#"><i class='bx bx-dislike'></i></a>
+                        <a class="mr-3 text-muted text-decoration-none" href="#"><i class='bx bx-share'></i></a>
+                        <a class="mr-3 text-muted text-decoration-none" href="#"><i class='bx bx-save'></i></a>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="text-center py-5">
+                <h4 class="text-muted mb-4">No any posts yet</h4>
+                <a href="{% url 'create_image_post' %}" class="btn btn-primary">
+                    <i class='bx bx-plus'></i> Create Your post
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

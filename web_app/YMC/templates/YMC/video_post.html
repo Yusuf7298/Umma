@@ -1,0 +1,51 @@
+{% extends "YMC/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    {% for post in videos %}
+        <article class="card mb-4 shadow-sm">
+            {% if post.videos_file %}
+            <div  class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="article-metadata">
+                      {% if post.author.profile.image %}
+                        <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}"> 
+                      {% else %}
+                        <img class="rounded-circle article-img" src="{% static 'YMC/default.jpg' %}">
+                      {% endif %}
+                        <a class="mr-2" href="#">{{ post.author }}</a>
+                        <small class="text-muted">{{ post.date_created|date:"F d, Y" }}</small>
+                    </div>
+                </div>
+                <hr style="border-radius: 1px;">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video loop muted class="embed-responsive-item rounded" controls>
+                      <source src="{{ post.videos_file.url }}" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                </div>
+                    {% if post.content|length > 10 %}
+                        <p class="card-text">{{ post.content|truncatewords:20 }}<a style="text-decoration: none;" href="{% url 'detail_post' post.id %}" class="text-primary"><small>See more</small></a></p>
+                    {% else %}
+                        <p class="card-text">{{ post.content }}</p>
+                    {% endif %}
+                <div class="d-flex justify-content-start align-items-center">  
+                    <a style="text-decoration: none;" class="mr-3 text-muted" href="{% url 'blogcomment' %}"><i class='bx bx-comment'></i></a>
+                    <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-like'></i></a>
+                    <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-dislike'></i></a>
+                    <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-share'></i></a>
+                    <a style="text-decoration: none;" class="mr-3 text-muted" href="#"><i class='bx bx-save'></i></a>
+                </div>
+            </div>
+            {% endif %}
+        </article>
+    {% empty %}
+      <div class="text-center py-5">
+         <h4 class="text-muted mb-4">No video posts yet</h4>
+         <a href="{% url 'create_video_post' %}" class="btn btn-primary">
+           <i class='bx bx-plus'></i> Create Your Video post
+        </a>
+      </div>
+    {% endfor %}
+</div>
+{% endblock %}

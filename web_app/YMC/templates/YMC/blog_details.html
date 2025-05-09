@@ -1,0 +1,25 @@
+{% extends "YMC/base.html" %}
+{% load static %}
+{% block content %}
+ <article class="media content-section">
+    {% if post.author.profile.image %}
+      <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}"> 
+    {% else %}
+      <img class="rounded-circle article-img" src="{% static 'YMC/default.jpg' %}">
+    {% endif %}  
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+        <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+        {% if object.author == user or user.is_staff %}
+          <div>
+            <a href="{% url 'update_post' object.id %}"><i class='bx bx-edit-alt' style='color:#0f3f9a'></i></a>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'delete_post' object.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+          </div>
+        {% endif %}
+      </div>
+      <h2>{{ object.title }}</h2>
+      <p class="article-content">{{ object.content }}</p>
+    </div>
+  </article>
+{% endblock content %}
